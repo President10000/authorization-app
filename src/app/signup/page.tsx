@@ -1,17 +1,47 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [user, setUser] = React.useState({
     email: "",
     password: "",
     username: "",
   });
+  const [buttonDisabled, setButtonDisabled] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  const onSignup = async () => { };
+  const onSignup = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/signup", user);
+      toast.success("Signup success");
+      console.log("Signup response", response.data);
+      router.push("/login");
+    } catch (error: any) {
+      toast.error("singup failed", error.message);
+      console.log("Signup failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      user.email.length > 0 &&
+      user.password.length > 0 &&
+      user.username.length > 0
+    ) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -22,7 +52,10 @@ export default function SignupPage() {
       bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%"
       >
         {/* for signup */}
-        <h1 className="text-4xl mb-[40px] font-serif font-bold">Signup</h1>
+        <Toaster position="top-center" reverseOrder={false} />
+        <h1 className="text-4xl mb-[40px] font-serif font-bold">
+          {loading ? "processsing" : "Signup"}
+        </h1>
         <hr />
         <label htmlFor="username" className=" my-2  text-black font-serif ">
           {" "}
@@ -74,11 +107,17 @@ export default function SignupPage() {
         bg-green-300 text-black hover:bg-green-600 font-serif "
         >
           {" "}
-          Signup here
+          {buttonDisabled ? "No Signup" : "Signup"}
         </button>
-        <Link href="/login" className=" font-serif  hover:text-black
+        <Link
+          href="/login"
+          className=" font-serif  hover:text-black
         
-        "> Already have an account? Login here</Link>
+        "
+        >
+          {" "}
+          Already have an account? Login here
+        </Link>
       </div>
     </div>
   );
