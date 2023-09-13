@@ -3,14 +3,42 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  // states
   const [user, setUser] = React.useState({
     email: "",
     password: "",
   });
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const onLogin = async () => {};
+  // function for validate
+  const onLogin = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/login", user);
+      console.log("Login response", response.data);
+      toast.success("Login success");
+      router.push("/profile");
+    } catch (error: any) {
+      console.log("Login failed", error.message);
+      toast.error("Login failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user.email.length > 0 && user.password.length > 0) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -22,7 +50,10 @@ export default function LoginPage() {
                      to-emerald-500 to-90%"
       >
         {/* for signup */}
-        <h1 className="text-4xl mb-[40px] font-serif font-bold">Login</h1>
+        <Toaster position="top-center" reverseOrder={false} />
+        <h1 className="text-4xl mb-[40px] font-serif font-bold">
+          {loading ? "processsing" : "Login"}
+        </h1>
 
         <hr className="bg-white h-1" />
 
@@ -62,7 +93,7 @@ export default function LoginPage() {
         bg-green-300 text-black hover:bg-green-600 font-serif "
         >
           {" "}
-          Login here
+          {buttonDisabled ? "No login" : "Login here"}
         </button>
         <Link
           href="/signup"
