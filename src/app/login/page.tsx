@@ -104,6 +104,15 @@ export default function LoginPage() {
           {" "}
           Want to Register ? Signup here
         </Link>
+        <Link
+          href="/forgotpassword"
+          className=" font-serif  hover:text-black
+        
+        "
+        >
+          {" "}
+          Forgot password
+        </Link>
       </div>
     </div>
   );
