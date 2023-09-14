@@ -58,6 +58,10 @@ export default function VerifyEmailPage() {
         >
           {"send verification email"}
         </button>
+
+        <Link href="/login" className=" font-serif  hover:text-black ">
+          want to login?
+        </Link>
       </div>
     </div>
   );
